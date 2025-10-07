@@ -69,18 +69,20 @@ export async function POST(request: Request) {
 
     const emailResponse = await sendVerification(email, username, verifyCode);
 
-    if (!emailResponse.success)
+    if (!emailResponse.success){
       return Response.json(
         { success: false, message: emailResponse.message },
         { status: 500 }
       );
+    }
+      
 
     return Response.json(
       {
         success: true,
         message: "User Registered Successfully please verify your email",
       },
-      { status: 200 }
+      { status: 201 }
     );
   } catch (error) {
     console.error({message: "Error registering user"}, error);

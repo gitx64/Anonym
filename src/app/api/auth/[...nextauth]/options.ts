@@ -47,10 +47,6 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
-    GitHubProvider({
-      clientId: `${process.env.GITHUB_ID}`,
-      clientSecret: `${process.env.GITHUB_SECRET}`,
-    }),
   ],
 
   callbacks: {
@@ -81,5 +77,5 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: `${process.env.NEXTAUTH_SECRET}`,
 };

@@ -42,12 +42,12 @@ export async function GET(request: Request){
 
         const existingVerifiedUser = await UserModel.findOne({username, isVerified: true})
 
-        if (!existingVerifiedUser) {
+        if (existingVerifiedUser) {
             return Response.json({
                 success: false,
                 message: "Username is already taken"
             }, {status: 400})
-        }
+        } // in this code it is possible that lets say the user has taken the username already but not verfied ,but in the mean time another unverfied user is trying to take the same username of the previous one. so as per the code this user CAN take that previous ones username cause he is still unverfied. 
 
         return Response.json({
                 success: true,

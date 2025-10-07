@@ -47,12 +47,10 @@ const UserSchema: Schema<User> = new Schema({
         required: true,
         trim: true,
         minLength: 6,
-        maxLength: 10,
     },
     verifyCode: {
         type: String,
         minLength: 5,
-        maxLength: 5 
     },
     verifyCodeExpiry: {
         type: Date,
