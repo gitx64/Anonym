@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     if (!session || !session.user) {
         return jsonRes(false, "User not logged in", 400);
     }
-
+  
     const userId = user?._id
     const { acceptMessages } = await req.json()
 
@@ -50,7 +50,7 @@ export async function GET(req: Request) {
         if (!session?.user) {
             return jsonRes(false, "User is not authenticated", 400)
         }
-        if (!session || !session.user) {
+        if (!session) {
             return jsonRes(false, "User not logged in", 400);
         }
 
