@@ -12,9 +12,11 @@ import { signUpSchema } from "@/schemas/signUpSchema";
 import { sign } from "crypto";
 import { set } from "mongoose";
 import { ApiResponse } from "../../../../types/ApiResponse";
+import { signInVerification } from "@/schemas/signInSchema";
+import { signIn } from "next-auth/react";
 // you must have axios for flexibility because special function names in nextjs are only valid under route handellers.
 
-export default function page() {
+export default function SignInPage() {
   const [username, setUsername] = useState("");
   const [usernameMessage, setUsernameMessage] = useState("");
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
@@ -24,45 +26,44 @@ export default function page() {
   const router = useRouter();
 
   //zod
-  const form = useForm({
+  const form = useForm<z.infer<typeof signInVerification>>({
     // can take <z.infer<typeof signUpSchema>>
-    resolver: zodResolver(signUpSchema),
+    resolver: zodResolver(signInVerification),
     defaultValues: {
-      username: "",
-      email: "",
+      identifier: "",
       password: "",
     },
   });
 
-  useEffect(() => {
-    const checkUserNameUnique = async () => {
-      if (debouncedUsername) {
-        setIsCheckingUsername(true);
-        setUsernameMessage("");
-      }
-      try {
-        const response = await axios.get(
-          `/api/check-username-unique?username=${debouncedUsername}`,
-        );
-        console.log(response);
-        setUsernameMessage(response.data.message);
-      } catch (error) {
-        const axiosError: AxiosError<ApiResponse> =
-          error as AxiosError<ApiResponse>; //assertion as AxiosError
+  // useEffect(() => {
+  //   const checkUserNameUnique = async () => {
+  //     if (debouncedUsername) {
+  //       setIsCheckingUsername(true);
+  //       setUsernameMessage("");
+  //     }
+  //     try {
+  //       const response = await axios.get(
+  //         `/api/check-username-unique?username=${debouncedUsername}`,
+  //       );
+  //       console.log(response);
+  //       setUsernameMessage(response.data.message);
+  //     } catch (error) {
+  //       const axiosError: AxiosError<ApiResponse> =
+  //         error as AxiosError<ApiResponse>; //assertion as AxiosError
 
-        setUsernameMessage(
-          axiosError.response?.data.message ?? "Error Checking Username",
-        );
-      } finally {
-        setIsCheckingUsername(false);
-      }
-    };
-    checkUserNameUnique();
-  }, [debouncedUsername]);
+  //       setUsernameMessage(
+  //         axiosError.response?.data.message ?? "Error Checking Username",
+  //       );
+  //     } finally {
+  //       setIsCheckingUsername(false);
+  //     }
+  //   };
+  //   checkUserNameUnique();
+  // }, [debouncedUsername]);
 
-  const handleUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value);
-  };
+  // const handleUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setUsername(e.target.value);
+  // };
 
   // const handleUsernameMessage = () => {
   //   setUsername(username);
@@ -71,16 +72,27 @@ export default function page() {
   // const handleLoadingState = () => {
   //   setUsername(username);
   // }
-  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
+  const onSubmit = async (data: z.infer<typeof signInVerification>) => {
     setIsSubmitting(true);
     try {
-      const response = await axios.post("/api/auth/sign-in", data);
-      
+      const result = await signIn("credentials",{
+        redirect: false,
+        ...data
+      })
+
+      if(result?.error){
+        toast.error(result.error)
+      }
+      toast.success("Signed In Successfully");
+      router.push("/dashboard")
     } catch (error) {
-      
+      toast.error("Something Went Wrong while signing in")
     }finally{
       setIsSubmitting(false);
     }
   }
-  return <></>;
+  return (
+    <>
+    </>
+  );
 }
