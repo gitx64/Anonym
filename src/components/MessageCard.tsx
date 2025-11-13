@@ -1,11 +1,6 @@
-'use client';
+"use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,25 +17,28 @@ import { Message } from "@/models/User";
 import { ApiResponse } from "@/types/ApiResponse";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
+import { X } from "lucide-react";
 
 interface MessageCardProps {
   message: Message;
   onMessageDelete: (messageId: string) => void;
 }
 
-export default function MessageCard({ message, onMessageDelete }: MessageCardProps) {
-
+export default function MessageCard({
+  message,
+  onMessageDelete,
+}: MessageCardProps) {
   const handleDeleteConfirm = async () => {
     try {
       const response = await axios.delete<ApiResponse>(
-        `/api/delete-message/${message._id}`
+        `/api/delete-message/${message._id}`,
       );
       toast.success(response.data.message);
       onMessageDelete(message._id as string);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast.error(
-        axiosError.response?.data.message ?? 'Failed to delete message'
+        axiosError.response?.data.message ?? "Failed to delete message",
       );
     }
   };
@@ -52,8 +50,8 @@ export default function MessageCard({ message, onMessageDelete }: MessageCardPro
           <CardTitle>{message.content}</CardTitle>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant={'destructive'}>
-                Delete
+              <Button variant={"destructive"}>
+                <X className="w-4 h-4" />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
